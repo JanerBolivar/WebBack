@@ -5,7 +5,7 @@ import userRouter from "./usuarios.js"
 const router = Router()
 
 // Rutas de usuarios
-router.use("/usuarios", userRouter)
+router.use("/user", userRouter)
 
 
 export default router
