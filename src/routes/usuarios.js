@@ -1,26 +1,25 @@
 import { Router } from "express";
 import { auth, database } from "../firebase-config.js";
-import { ref, set, get } from "firebase/database";
-
-import { ref as dbRef } from "firebase/database";
+import { DATABASE_URL, SECRET_KEY } from "../config/index.js";
+import { ref, ref as dbRef, set, get } from "firebase/database";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import multer from "multer";
-
-import { SECRET_KEY } from "../config/index.js";
 import jwt from 'jsonwebtoken';
 import admin from 'firebase-admin';
+
+import credentialsAPI from "../config/env.js";
+
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail
 } from "firebase/auth";
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = './src/serviceAccountKey.json';
-
 admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    databaseURL: "https://bitacora-peces-default-rtdb.firebaseio.com"
+    credential: admin.credential.cert(credentialsAPI),
+    databaseURL: DATABASE_URL
 });
+
 
 // Configuración de multer para manejar las imágenes
 const storage = multer.memoryStorage();
@@ -132,6 +131,7 @@ userRouter.post('/login', async (req, res) => {
             email: user.email,
             firstName: userData.firstName,
             lastName: userData.lastName,
+            photoURL: userData.photoURL,
             role: userData.role
         }, SECRET_KEY, {
             expiresIn: '1h'
@@ -149,6 +149,7 @@ userRouter.post('/login', async (req, res) => {
                 email: user.email,
                 firstName: userData.firstName,
                 lastName: userData.lastName,
+                photoURL: userData.photoURL,
                 role: userData.role
             },
             token,
